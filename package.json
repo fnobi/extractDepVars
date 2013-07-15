@@ -1,0 +1,19 @@
+{
+  "name": "extractDepVars",
+  "version": "0.0.0",
+  "main": "sample.js",
+  "scripts": {
+  },
+  "repository": "",
+  "author": "Fujisawa Shin",
+  "license": "BSD",
+  "dependencies": {
+    "uglify-js": "~2.3.6",
+    "underscore": "~1.4.4",
+    "jsdom": "~0.6.5"
+  },
+  "devDependencies": {
+    "chai": "~1.7.0",
+    "mocha": "~1.11.0"
+  }
+}

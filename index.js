@@ -37,6 +37,10 @@ var extractDepVars = function (code, opts) {
         } else if (node.name) {
             var name = node.name;
 
+            while (name.name) {
+                name = name.name;
+            }
+
             if ('init' in node) {
                 scope.defined[name] = true;
             }

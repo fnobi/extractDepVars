@@ -21,5 +21,11 @@ describe('extractDepVars', function () {
                 deps = extractDepVars(code);
             expect(deps).to.eql([]);
         });
+
+        it('access name through window', function () {
+            var code = fs.readFileSync('test/js/sample4.js', 'utf8'),
+                deps = extractDepVars(code);
+            expect(deps).to.eql(['mogera']);
+        });
     });
 });

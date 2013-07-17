@@ -48,8 +48,10 @@ var extractDepVars = function (code, opts) {
             // console.log('[access: %s on %d]', name, scope.depth());
 
             scope.access.push(name);
+        } else if (node.expression && node.expression.name == 'window') {
+            // windowを通してのアクセス
+            scope.access.push(node.property);
         }
-
     });
 
     toplevel.walk(walker);

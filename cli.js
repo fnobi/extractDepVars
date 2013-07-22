@@ -5,8 +5,6 @@ var fs = require('fs'),
 
 var code = fs.readFileSync(process.argv[2], 'utf8');
 
-extractDepVars(code, function (deps) {
-  console.log(deps);
-});
-
-
+console.log(
+  extractDepVars(code)
+);

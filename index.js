@@ -1,6 +1,5 @@
 var UglifyJS = require('uglify-js'),
     _ = require('underscore'),
-    jsdom = require('jsdom'),
     Scope = require('./lib/Scope'),
     win = require('./lib/window.js');
 
@@ -34,7 +33,11 @@ var extractDepVars = function (code, opts) {
             // console.log('[vardef: %s on %d]', node.name.name, scope.depth());
             scope.defined[node.name.name] = true;
 
-        } else if (node.name) {
+        } else if (node instanceof UglifyJS.AST_VarDef) {
+            // console.log('[vardef: %s on %d]', node.name.name, scope.depth());
+            scope.defined[node.name.name] = true;
+
+        } else if (node instanceof UglifyJS.AST_Symbol) {
             var name = node.name;
 
             while (name.name) {
@@ -45,12 +48,45 @@ var extractDepVars = function (code, opts) {
                 scope.defined[name] = true;
             }
 
-            // console.log('[access: %s on %d]', name, scope.depth());
-
+            if (typeof name != 'string') {
+                throw Error();
+            }
             scope.access.push(name);
-        } else if (node.expression && node.expression.name == 'window') {
+        } else if (node instanceof UglifyJS.AST_PropAccess && node.expression.name == 'window') {
             // windowを通してのアクセス
-            scope.access.push(node.property);
+            var property = node.property;
+            if (property.value) {
+                property = property.value;
+            }
+            if (property.name) {
+                property = property.name;
+            }
+
+            if (typeof property != 'string') {
+                throw Error();
+            }
+            scope.access.push(property);
+        }
+
+        if (node.operator == '=') {
+            // 定義をはさまない代入
+            if (node.left.name) {
+                name = node.left.name;
+                if (name.value) {
+                    name = name.value;
+                }
+
+                scope.defined[name] = true;
+            }
+
+            if (node.left.property) {
+                property = node.left.property;
+                if (property.value) {
+                    property = property.value;
+                }
+
+                scope.defined[property] = true;
+            }
         }
     });
 

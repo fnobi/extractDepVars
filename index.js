@@ -10,8 +10,8 @@ var extractDepVars = function (code, opts) {
         scope = new Scope(toplevel);
 
     var walker = new UglifyJS.TreeWalker(function (node) {
-        if (scope.end < node.end.endpos) {
-            // console.log('[close: %d]', scope.depth());
+        var endpos = node.end ? node.end.endpos : node.start.endpos;
+        if (scope.end < endpos) {
             var undef = _.difference(scope.access, _.keys(scope.defined));
             scope = scope.parent;
             scope.access = _.union(scope.access, undef);

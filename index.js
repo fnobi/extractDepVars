@@ -3,11 +3,21 @@ var UglifyJS = require('uglify-js'),
     Scope = require('./lib/Scope'),
     win = require('./lib/window.js');
 
-var extractDepVars = function (code, opts) {
-    opts = opts || {};
+var extractDepVars = function (code, callback) {
+    callback = callback || function () {};
 
-    var toplevel = UglifyJS.parse(code),
-        scope = new Scope(toplevel);
+    var toplevel;
+    try {
+        toplevel = UglifyJS.parse(code);
+    } catch (e) {
+        callback(e);
+    }
+
+    if (!toplevel) {
+        return;
+    }
+    
+    var scope = new Scope(toplevel);
 
     var walker = new UglifyJS.TreeWalker(function (node) {
         var endpos = node.end ? node.end.endpos : node.start.endpos;
@@ -98,7 +108,7 @@ var extractDepVars = function (code, opts) {
         scope.access = _.union(scope.access, undef);
     }
 
-    return _.difference(scope.access, _.keys(scope.defined), win);
+    callback(null, _.difference(scope.access, _.keys(scope.defined), win));
 };
 
 module.exports = extractDepVars;
